@@ -1,4 +1,4 @@
-=== Schema Creator ===
+=== Schema Creator by Raven ===
 Contributors: norcross, raventools
 Tags: schema.org, microdata, structured data, seo, html5
 Tested up to: 3.4.1
