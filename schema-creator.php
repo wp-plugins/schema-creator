@@ -3,7 +3,7 @@
 Plugin Name: Schema Creator by Raven
 Plugin URI: http://schema-creator.org/?utm_source=wp&utm_medium=plugin&utm_campaign=schema
 Description: Insert schema.org microdata into posts and pages
-Version: 1.022
+Version: 1.0221
 Author: Raven Internet Marketing Tools
 Author URI: http://raventools.com/?utm_source=wp&utm_medium=plugin&utm_campaign=schema
 License: GPL v2
@@ -138,6 +138,7 @@ class ravenSchema
             	<div class="schema_form_text">
             	<p>By default, the <a href="http://schema-creator.org/?utm_source=wp&utm_medium=plugin&utm_campaign=schema" target="_blank">Schema Creator</a> plugin by <a href="http://raventools.com/?utm_source=wp&utm_medium=plugin&utm_campaign=schema" target="_blank">Raven Internet Marketing Tools</a> includes unique CSS IDs and classes. You can reference the CSS to control the style of the HTML that the Schema Creator plugin outputs.</p>
             	<p>The plugin can also automatically include <a href="http://schema.org/Blog" target="_blank">http://schema.org/Blog</a> and <a href="http://schema.org/BlogPosting" target="_blank">http://schema.org/BlogPosting</a> schemas to your pages and posts.</p>
+				<p>Google also offers a <a href="http://www.google.com/webmasters/tools/richsnippets/" target="_blank">Rich Snippet Testing tool</a> to review and test the schemas in your pages and posts.</p>
                 </div>
                 
                 <div class="schema_form_options">
