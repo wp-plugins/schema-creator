@@ -2,7 +2,7 @@
 Contributors: norcross, raventools
 Tags: schema.org, microdata, structured data, seo, html5
 Tested up to: 3.4.2
-Stable tag: 1.0221
+Stable tag: 1.023
 Requires at least: 3.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -51,8 +51,10 @@ This plugin is also maintained on [GitHub](https://github.com/norcross/schema-cr
 
 == Changelog ==
 
-= 1.0222 =
-* a small change to the readme and instructions page to include a link to the Google Rich Snippet testing page.
+= 1.023 =
+* bugfix for HTML entities in schema descriptions
+* metabox option to disable itemprop & itemtype on a post by post basis
+* change to the readme and instructions page to include a link to the Google Rich Snippet testing page
 
 = 1.022 =
 * replacing body tag method from JS to using core WP functionality.

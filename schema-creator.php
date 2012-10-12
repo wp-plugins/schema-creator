@@ -3,7 +3,7 @@
 Plugin Name: Schema Creator by Raven
 Plugin URI: http://schema-creator.org/?utm_source=wp&utm_medium=plugin&utm_campaign=schema
 Description: Insert schema.org microdata into posts and pages
-Version: 1.0221
+Version: 1.023
 Author: Raven Internet Marketing Tools
 Author URI: http://raventools.com/?utm_source=wp&utm_medium=plugin&utm_campaign=schema
 License: GPL v2
@@ -24,7 +24,7 @@ License: GPL v2
 
 	Resources
 
-	http://schema_creator.org/
+	http://schema-creator.org/
 	http://foolip.org/microdatajs/live/
 	http://www.google.com/webmasters/tools/richsnippets
 	
@@ -40,18 +40,92 @@ class ravenSchema
 	 * @return ravenSchema
 	 */
 	public function __construct() {
-		add_action					( 'admin_menu',				array( $this, 'schema_settings'	) );
-		add_action					( 'admin_init', 			array( $this, 'reg_settings'	) );
-		add_action					( 'admin_enqueue_scripts',	array( $this, 'admin_scripts'	) );		
-		add_action					( 'admin_footer',			array( $this, 'schema_form'		) );
-		add_action					( 'the_posts', 				array( $this, 'schema_loader'	) );
-		add_filter					( 'media_buttons_context',	array( $this, 'media_button'	) );
-		add_filter					( 'the_content',			array( $this, 'schema_wrapper'	) );
-		add_filter					( 'admin_footer_text',		array( $this, 'schema_footer'	) );
-		add_shortcode				( 'schema',					array( $this, 'shortcode'		) );
-		register_activation_hook	( __FILE__, 				array( $this, 'store_settings'	) );
+		add_action					( 'admin_menu',				array( $this, 'schema_settings'		)			);
+		add_action					( 'admin_init', 			array( $this, 'reg_settings'		)			);
+		add_action					( 'admin_enqueue_scripts',	array( $this, 'admin_scripts'		)			);
+		add_action					( 'admin_footer',			array( $this, 'schema_form'			)			);
+		add_action					( 'the_posts', 				array( $this, 'schema_loader'		)			);
+		add_action					( 'do_meta_boxes',			array( $this, 'metabox_schema'		), 10,	2	);
+		add_action					( 'save_post',				array( $this, 'save_metabox'		)			);
+		
+		add_filter					( 'body_class',             array( $this, 'body_class'			)			);
+		add_filter					( 'media_buttons_context',	array( $this, 'media_button'		)			);
+		add_filter					( 'the_content',			array( $this, 'schema_wrapper'		)			);
+		add_filter					( 'admin_footer_text',		array( $this, 'schema_footer'		)			);
+		add_shortcode				( 'schema',					array( $this, 'shortcode'			)			);
+		register_activation_hook	( __FILE__, 				array( $this, 'store_settings'		)			);
 	}
 
+	/**
+	 * display metabox
+	 *
+	 * @return ravenSchema
+	 */
+
+	public function metabox_schema( $page, $context ) {
+
+		// check to see if they have options first
+		$schema_options	= get_option('schema_options');
+
+		// they haven't enabled this? THEN YOU LEAVE NOW
+		if(empty($schema_options['body']) && empty($schema_options['post']) )
+			return;
+
+		$types	= array('post' => 'post');	
+    	
+		if ( in_array( $page,  $types ) && 'side' == $context )
+		add_meta_box('schema-post-box', __('Schema Display Options'), array(&$this, 'schema_post_box'), $page, $context, 'high');
+		
+
+	}
+
+	/**
+	 * Display checkboxes for disabling the itemprop and itemscope
+	 *
+	 * @return ravenSchema
+	 */
+
+	public function schema_post_box() {
+	
+		global $post;
+		$disable_props	= get_post_meta($post->ID, '_schema_disable_props', true);
+		
+		// use nonce for security
+		wp_nonce_field( plugin_basename( __FILE__ ), 'schema_nonce' );
+
+		echo '<p>';
+		echo '<input type="checkbox" name="schema_disable_props" id="schema_disable_props" value="true" '.checked($disable_props, true, false).'>';
+		echo '<label style="font-style:italic;margin-left:3px;" for="schema_disable_props">Disable schema itemscopes on this post.</label>';
+		echo '</p>';
+	}
+
+	/**
+	 * save the data
+	 *
+	 * @return ravenSchema
+	 */
+
+
+	public function save_metabox($post_id) {
+
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) 
+			return;
+
+		if ( !wp_verify_nonce( $_POST['schema_nonce'], plugin_basename( __FILE__ ) ) )
+			return;
+
+		if ( !current_user_can( 'edit_post', $post_id ) )
+			return;
+
+		// OK, we're authenticated: we need to find and save the data
+
+		$disable_props = $_POST['schema_disable_props'];
+
+		$disable_check	= isset($disable_props) ? true : false;
+		
+		update_post_meta($post_id, '_schema_disable_props', $disable_check);
+
+	}
 
 	/**
 	 * build out settings page
@@ -236,13 +310,20 @@ class ravenSchema
 
 	public function body_class( $classes ) {
 
+		// check for single post disable
+		global $post;
+		$disable_props	= get_post_meta($post->ID, '_schema_disable_props', true);
+
+		if($disable_props == true )
+			return $classes;
+
 		$schema_options = get_option('schema_options');
 
 		$bodytag = isset($schema_options['body']) && $schema_options['body'] == 'true' ? true : false;
 
 		// user disabled the tag. so bail.
 		if($bodytag === false )
-			return;
+			return $classes;
 
 		$backtrace = debug_backtrace();
 		if ( $backtrace[4]['function'] === 'body_class' )
@@ -306,6 +387,13 @@ class ravenSchema
 	 */
 
 	public function schema_wrapper($content) {
+
+		// check for single post disable
+		global $post;
+		$disable_props	= get_post_meta($post->ID, '_schema_disable_props', true);
+
+		if($disable_props == true )
+			return $content;
 
 		$schema_options = get_option('schema_options');
 
@@ -416,7 +504,7 @@ class ravenSchema
 				$sc_build .= '<div class="schema_jobtitle" itemprop="jobtitle">'.$jobtitle.'</div>';
 
 			if(!empty($description))
-				$sc_build .= '<div class="schema_description" itemprop="description">'.esc_textarea($description).'</div>';
+				$sc_build .= '<div class="schema_description" itemprop="description">'.esc_attr($description).'</div>';
 
 			if(	!empty($street) ||
 				!empty($pobox) ||
@@ -491,7 +579,7 @@ class ravenSchema
 				$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
 
 			if(!empty($description))
-				$sc_build .= '<div class="schema_description" itemprop="description">'.esc_textarea($description).'</div>';
+				$sc_build .= '<div class="schema_description" itemprop="description">'.esc_attr($description).'</div>';
 
 			if(!empty($brand))
 				$sc_build .= '<div class="brand" itemprop="brand" itemscope itemtype="http://schema.org/Organization"><span class="desc_type">Brand:</span> <span itemprop="name">'.$brand.'</span></div>';
@@ -551,7 +639,7 @@ class ravenSchema
 				$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
 
 			if(!empty($description))
-				$sc_build .= '<div class="schema_description" itemprop="description">'.esc_textarea($description).'</div>';
+				$sc_build .= '<div class="schema_description" itemprop="description">'.esc_attr($description).'</div>';
 
 			if(!empty($sdate) && !empty($stime) ) {
 				$metatime = $sdate.'T'.date('G:i', strtotime($sdate.$stime));
@@ -640,7 +728,7 @@ class ravenSchema
 				$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
 
 			if(!empty($description))
-				$sc_build .= '<div class="schema_description" itemprop="description">'.esc_textarea($description).'</div>';
+				$sc_build .= '<div class="schema_description" itemprop="description">'.esc_attr($description).'</div>';
 
 			if(	!empty($street) ||
 				!empty($pobox) ||
@@ -715,7 +803,7 @@ class ravenSchema
 				$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
 
 			if(!empty($description))
-				$sc_build .= '<div class="schema_description" itemprop="description">'.esc_textarea($description).'</div>';
+				$sc_build .= '<div class="schema_description" itemprop="description">'.esc_attr($description).'</div>';
 
 
 			if(!empty($director)) 
@@ -755,7 +843,7 @@ class ravenSchema
 				$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
 
 			if(!empty($description))
-				$sc_build .= '<div class="schema_description" itemprop="description">'.esc_textarea($description).'</div>';
+				$sc_build .= '<div class="schema_description" itemprop="description">'.esc_attr($description).'</div>';
 
 			if(!empty($author)) 
 				$sc_build .= '<div itemprop="author" itemscope itemtype="http://schema.org/Person">Written by: <span itemprop="name">'.$author.'</span></div>';
@@ -808,7 +896,7 @@ class ravenSchema
 				$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
 
 			if(!empty($description))
-				$sc_build .= '<div class="schema_description" itemprop="description">'.esc_textarea($description).'</div>';
+				$sc_build .= '<div class="schema_description" itemprop="description">'.esc_attr($description).'</div>';
 
 			if(!empty($rev_name)) 
 				$sc_build .= '<div class="schema_review_name" itemprop="itemReviewed" itemscope itemtype="http://schema.org/Thing"><span itemprop="name">'.$rev_name.'</span></div>';
