@@ -2,7 +2,7 @@
 Contributors: norcross, raventools
 Tags: schema.org, microdata, structured data, seo, html5
 Tested up to: 3.4.2
-Stable tag: 1.03
+Stable tag: 1.030
 Requires at least: 3.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -51,7 +51,7 @@ This plugin is also maintained on [GitHub](https://github.com/norcross/schema-cr
 
 == Changelog ==
 
-= 1.03 =
+= 1.030 =
 * bumped version number to fix update quirk
 
 = 1.023 =
