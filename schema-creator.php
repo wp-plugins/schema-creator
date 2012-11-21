@@ -3,7 +3,7 @@
 Plugin Name: Schema Creator by Raven
 Plugin URI: http://schema-creator.org/?utm_source=wp&utm_medium=plugin&utm_campaign=schema
 Description: Insert schema.org microdata into posts and pages
-Version: 1.032
+Version: 1.033
 Author: Raven Internet Marketing Tools
 Author URI: http://raventools.com/?utm_source=wp&utm_medium=plugin&utm_campaign=schema
 License: GPL v2
@@ -34,7 +34,7 @@ if(!defined('SC_BASE'))
 	define('SC_BASE', plugin_basename(__FILE__) );
 
 if(!defined('SC_VER'))
-	define('SC_VER', '1.032');
+	define('SC_VER', '1.033');
 
 
 class ravenSchema
@@ -51,11 +51,11 @@ class ravenSchema
 		add_action					( 'admin_enqueue_scripts',	array( $this, 'admin_scripts'		)			);
 		add_action					( 'admin_footer',			array( $this, 'schema_form'			)			);
 		add_action					( 'the_posts', 				array( $this, 'schema_loader'		)			);
-		add_action					( 'do_meta_boxes',			array( $this, 'metabox_schema'		), 10,	2	);
+		add_action					( 'do_meta_boxes',			array( $this, 'metabox_schema'		),	10,	2	);
 		add_action					( 'save_post',				array( $this, 'save_metabox'		)			);
 		
 		add_filter					( 'body_class',             array( $this, 'body_class'			)			);
-		add_filter					( 'media_buttons_context',	array( $this, 'media_button'		)			);
+		add_filter					( 'media_buttons',			array( $this, 'media_button'		),	30		);
 		add_filter					( 'the_content',			array( $this, 'schema_wrapper'		)			);
 		add_filter					( 'admin_footer_text',		array( $this, 'schema_footer'		)			);
 		add_shortcode				( 'schema',					array( $this, 'shortcode'			)			);
@@ -1117,20 +1117,18 @@ class ravenSchema
 	 * @return ravenSchema
 	 */
 
-	public function media_button($context) {
+	public function media_button() {
 		
 		// don't show on dashboard (QuickPress)
 		$current_screen = get_current_screen();
 		if ( 'dashboard' == $current_screen->base )
-			return $context;
+			return;
 
 		// don't display button for users who don't have access
 		if ( ! current_user_can('edit_posts') && ! current_user_can('edit_pages') )
 			return;
-		
-		$button = '<a href="#TB_inline?width=650&inlineId=schema_build_form" class="thickbox schema_clear" id="add_schema" title="' . __('Schema Creator Form') . '">' . __('Schema Creator Form') . '</a>';
 
-	return $context . $button;
+		echo '<a href="#TB_inline?width=650&inlineId=schema_build_form" class="thickbox schema_clear" id="add_schema" title="' . __('Schema Creator Form') . '">' . __('Schema Creator Form') . '</a>';
 	
 	}
 
