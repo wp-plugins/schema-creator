@@ -55,7 +55,7 @@ class ravenSchema
 		add_action					( 'save_post',				array( $this, 'save_metabox'		)			);
 		
 		add_filter					( 'body_class',             array( $this, 'body_class'			)			);
-		add_filter					( 'media_buttons',			array( $this, 'media_button'		),	30		);
+		add_filter					( 'media_buttons',			array( $this, 'media_button'		),	31		);
 		add_filter					( 'the_content',			array( $this, 'schema_wrapper'		)			);
 		add_filter					( 'admin_footer_text',		array( $this, 'schema_footer'		)			);
 		add_shortcode				( 'schema',					array( $this, 'shortcode'			)			);
