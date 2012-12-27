@@ -3,7 +3,7 @@
 Plugin Name: Schema Creator by Raven
 Plugin URI: http://schema-creator.org/?utm_source=wp&utm_medium=plugin&utm_campaign=schema
 Description: Insert schema.org microdata into posts and pages
-Version: 1.036
+Version: 1.037
 Author: Raven Internet Marketing Tools
 Author URI: http://raventools.com/?utm_source=wp&utm_medium=plugin&utm_campaign=schema
 License: GPL v2
@@ -34,7 +34,7 @@ if(!defined('SC_BASE'))
 	define('SC_BASE', plugin_basename(__FILE__) );
 
 if(!defined('SC_VER'))
-	define('SC_VER', '1.036');
+	define('SC_VER', '1.037');
 
 
 class ravenSchema
@@ -1090,11 +1090,11 @@ class ravenSchema
 					if(!empty($fatcount))
 						$sc_build .= '<li><span itemprop="fatContent">'.$fatcount.' grams of fat</span></li>';
 
-					if(!empty($saltcount))
-						$sc_build .= '<li><span itemprop="sugarContent">'.$saltcount.' grams of sugar</span></li>';
-
 					if(!empty($sugarcount))
-						$sc_build .= '<li><span itemprop="sodiumContent">'.$sugarcount.' milligrams of sodium</span></li>';
+						$sc_build .= '<li><span itemprop="sugarContent">'.$sugarcount.' grams of sugar</span></li>';
+
+					if(!empty($saltcount))
+						$sc_build .= '<li><span itemprop="sodiumContent">'.$saltcount.' milligrams of sodium</span></li>';
 
 				$sc_build .= '</ul></div>';
 			}
