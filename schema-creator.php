@@ -47,7 +47,7 @@ if(!defined('SC_BASE'))
 	define('SC_BASE', plugin_basename(__FILE__) );
 
 if(!defined('SC_VER'))
-	define('SC_VER', '1.050');
+	define('SC_VER', '1.1.1');
 
 
 if ( !class_exists( "RavenSchema" ) ) :
