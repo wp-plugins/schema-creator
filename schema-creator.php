@@ -6,20 +6,22 @@ Description: Insert schema.org microdata into posts and pages
 Version: 1.050
 Author: Raven Internet Marketing Tools
 Author URI: http://raventools.com/?utm_source=wp&utm_medium=plugin&utm_campaign=schema
+Text Domain: schema
+Domain path: /languages
 License: GPL v2
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License, version 2, as
-    published by the Free Software Foundation.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License, version 2, as
+	published by the Free Software Foundation.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
 	Resources
@@ -134,8 +136,8 @@ if ( !class_exists( "RavenSchema" ) ) :
 				'parent'	=> 'top-secondary',
 				'id'		=> 'schema-test',
 				'title' 	=> _x('Test Schema', 'test the schema button title', 'schema'),
-				'href'		=> esc_url( __( 'http://www.google.com/webmasters/tools/richsnippets/', 'schema' ) .
-										'?url='.urlencode($link).'&html=' ),
+				'href'		=> esc_url( __( 'http://www.google.com/webmasters/tools/richsnippets', 'schema' ) .
+										'?q='.urlencode($link) ),
 				'meta'		=> array(
 					'class'		=> 'schema-test',
 					'target'	=> '_blank'
@@ -181,7 +183,7 @@ if ( !class_exists( "RavenSchema" ) ) :
 		}
 
 		/**
-		 * Display checkboxes for disabling the itemprop and itemscope
+		 * Display checkboxes for disabling the property/itemprop and property/itemscope
 		 */
 		public function schema_post_box( ) {
 			global $post;
@@ -302,8 +304,8 @@ if ( !class_exists( "RavenSchema" ) ) :
 		 */
 		function options_info_section() {
 		?>
-            <div id='info_section'>
-                <p>
+			<div id='info_section'>
+				<p>
 				<?php
 					printf(
 						__( 'By default, the %s plugin by %s includes unique CSS IDs and classes. You can reference the CSS to control the style of the HTML that the Schema Creator plugin outputs.' , 'schema' ).'<br>',
@@ -328,10 +330,10 @@ if ( !class_exists( "RavenSchema" ) ) :
 							title="' . esc_attr__( 'Rich Snippet Testing tool', 'schema' ) . '"> '. __( 'Rich Snippet Testing tool' , 'schema'). '</a>'
 					)
 				?>
-                </p>
+				</p>
 
 			</div> <!-- end #info_section -->
-            <?php
+			<?php
 		}
 
 		/**
@@ -490,14 +492,14 @@ if ( !class_exists( "RavenSchema" ) ) :
 			<div class="wrap">
 				<div class="icon32" id="icon-schema"><br></div>
 				<h2><?php _e('Schema Creator Settings', 'schema'); ?></h2>
-                <div class="schema_options">
-                	<form action="options.php" method="post">
+				<div class="schema_options">
+					<form action="options.php" method="post">
 						<?php settings_fields( 'schema_options' ); ?>
-	 					<?php do_settings_sections('schema_options'); ?>
-	                    <p class="submit">
-                        	<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes'); ?>" />
-                    	</p>
-                	</form>
+						<?php do_settings_sections('schema_options'); ?>
+						<p class="submit">
+							<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes', 'schema'); ?>" />
+						</p>
+					</form>
 				</div> <!-- end .schema_options -->
 			</div> <!-- end .wrap -->
 		<?php }
@@ -523,7 +525,7 @@ if ( !class_exists( "RavenSchema" ) ) :
 
 			// for admin settings screen
 			$current_screen = get_current_screen();
-			if ( 'settings_page_schema-creator' == $current_screen->base ) :
+			if ( is_object($current_screen) && 'settings_page_schema-creator' == $current_screen->base ) :
 				wp_enqueue_style( 'schema-admin', plugins_url('/lib/css/schema-admin.css', __FILE__), array(), SC_VER, 'all' );
 
 				wp_enqueue_script( 'jquery-qtip', plugins_url('/lib/js/jquery.qtip.min.js', __FILE__) , array('jquery'), SC_VER, true );
@@ -541,7 +543,7 @@ if ( !class_exists( "RavenSchema" ) ) :
 		public function schema_footer( $text ) {
 			$current_screen = get_current_screen();
 
-			if ( 'settings_page_schema-creator' !== $current_screen->base )
+			if ( is_object($current_screen) && 'settings_page_schema-creator' !== $current_screen->base )
 				return $text;
 
 			$text = '<span id="footer-thankyou">' .
@@ -560,7 +562,7 @@ if ( !class_exists( "RavenSchema" ) ) :
 		/**
 		 * Load body classes.
 		 *
-		 * Outputs itemtype and itemscope when body classes are generated.
+		 * Outputs typeof/itemtype and itemscope when body classes are generated.
 		 *
 		 * @param string[] $classes current body classes
 		 * @return string[] new body classes
@@ -588,8 +590,8 @@ if ( !class_exists( "RavenSchema" ) ) :
 
 			$backtrace = debug_backtrace();
 			if ( $backtrace[4]['function'] === 'body_class' ) {
-				echo 'itemtype="http://schema.org/Blog" ';
-				echo 'itemscope="" ';
+				echo 'typeof="schema:Blog" ';
+				//echo 'itemscope="" ';
 			}
 
 			return $classes;
@@ -663,8 +665,8 @@ if ( !class_exists( "RavenSchema" ) ) :
 			if( $disable_post === true || $disable_post == 'true' || $disable_post == '1' )
 				return $content;
 
-			// updated content filter to wrap the itemscope
-			$content = '<div itemscope itemtype="http://schema.org/BlogPosting">'.$content.'</div>';
+			// updated content filter to wrap the typeof/itemscope
+			$content = '<div typeof="schema:BlogPosting">'.$content.'</div>';
 
 		// Returns the content.
 		return $content;
@@ -684,6 +686,7 @@ if ( !class_exists( "RavenSchema" ) ) :
 				'evtype'			=> '',
 				'orgtype'			=> '',
 				'name'				=> '',
+				'worksfor'			=> '',
 				'orgname'			=> '',
 				'jobtitle'			=> '',
 				'url'				=> '',
@@ -756,33 +759,36 @@ if ( !class_exists( "RavenSchema" ) ) :
 			}
 
 			// wrap schema build out
-			$sc_build = '<div id="schema_block" class="schema_'.$type.'">';
+			$sc_build = '<div class="schema_block schema_'.$type.'">';
 
 			// person
 			if(isset($type) && $type == 'person') {
 
-				$sc_build .= '<div itemscope itemtype="http://schema.org/Person">';
+				$sc_build .= '<div typeof="schema:Person">';
 
 				if(!empty($name) && !empty($url) ) {
-					$sc_build .= '<a class="schema_url" target="_blank" itemprop="url" href="'.esc_url($url).'">';
-					$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
+					$sc_build .= '<a class="schema_url" target="_blank" property="schema:url" href="'.esc_url($url).'">';
+					$sc_build .= '<div class="schema_name" property="schema:name">'.$name.'</div>';
 					$sc_build .= '</a>';
 				}
 
 				if(!empty($name) && empty($url) )
-					$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
+					$sc_build .= '<div class="schema_name" property="schema:name">'.$name.'</div>';
 
 				if(!empty($orgname)) {
-					$sc_build .= '<div itemscope itemtype="http://schema.org/Organization">';
-					$sc_build .= '<span class="schema_orgname" itemprop="name">'.$orgname.'</span>';
+					$sc_build .= '<div typeof="schema:Organization">';
+					$sc_build .= '<span class="schema_orgname" property="schema:name">'.$orgname.'</span>';
 					$sc_build .= '</div>';
 				}
 
 				if(!empty($jobtitle))
-					$sc_build .= '<div class="schema_jobtitle" itemprop="jobtitle">'.$jobtitle.'</div>';
+					$sc_build .= '<div class="schema_jobtitle" property="schema:jobtitle">'.$jobtitle.'</div>';
+
+				if(!empty($worksfor))
+					$sc_build .= '<div class="schema_worksfor" itemprop="worksfor">'.$worksfor.'</div>';
 
 				if(!empty($description))
-					$sc_build .= '<div class="schema_description" itemprop="description">'.esc_attr($description).'</div>';
+					$sc_build .= '<div class="schema_description" property="schema:description">'.esc_attr($description).'</div>';
 
 				if(	!empty($street) ||
 					!empty($pobox) ||
@@ -791,31 +797,31 @@ if ( !class_exists( "RavenSchema" ) ) :
 					!empty($postalcode) ||
 					!empty($country)
 					)
-					$sc_build .= '<div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">';
+					$sc_build .= '<div property="schema:address" typeof="schema:PostalAddress">';
 
 				if(!empty($street))
-					$sc_build .= '<div class="street" itemprop="streetAddress">'.$street.'</div>';
+					$sc_build .= '<div class="street" property="schema:streetAddress">'.$street.'</div>';
 
 				if(!empty($pobox))
-					$sc_build .= '<div class="pobox">'.__('P.O. Box:', 'schema' ).' <span itemprop="postOfficeBoxNumber">'.$pobox.'</span></div>';
+					$sc_build .= '<div class="pobox">'.__('P.O. Box:', 'schema' ).' <span property="schema:postOfficeBoxNumber">'.$pobox.'</span></div>';
 
 				if(!empty($city) && !empty($state)) :
 					$sc_build .= '<div class="city_state">';
-					$sc_build .= '<span class="locale" itemprop="addressLocality">'.$city.'</span>,';
-					$sc_build .= '<span class="region" itemprop="addressRegion">'.$state.'</span>';
+					$sc_build .= '<span class="locale" property="schema:addressLocality">'.$city.'</span>,';
+					$sc_build .= '<span class="region" property="schema:addressRegion">'.$state.'</span>';
 					$sc_build .= '</div>';
 				// secondary check if one part of city / state is missing to keep markup consistent
 				elseif(empty($state) && !empty($city) ) :
-					$sc_build .= '<div class="city_state"><span class="locale" itemprop="addressLocality">'.$city.'</span></div>';
+					$sc_build .= '<div class="city_state"><span class="locale" property="schema:addressLocality">'.$city.'</span></div>';
 				elseif(empty($city) && !empty($state) ) :
-					$sc_build .= '<div class="city_state"><span class="region" itemprop="addressRegion">'.$state.'</span></div>';
+					$sc_build .= '<div class="city_state"><span class="region" property="schema:addressRegion">'.$state.'</span></div>';
 				endif;
 
 				if(!empty($postalcode))
-					$sc_build .= '<div class="postalcode" itemprop="postalCode">'.$postalcode.'</div>';
+					$sc_build .= '<div class="postalcode" property="schema:postalCode">'.$postalcode.'</div>';
 
 				if(!empty($country))
-					$sc_build .= '<div class="country" itemprop="addressCountry">'.$country.'</div>';
+					$sc_build .= '<div class="country" property="schema:addressCountry">'.$country.'</div>';
 
 				if(	!empty($street) ||
 					!empty($pobox) ||
@@ -827,13 +833,13 @@ if ( !class_exists( "RavenSchema" ) ) :
 					$sc_build .= '</div>';
 
 				if(!empty($email))
-					$sc_build .= '<div class="email" itemprop="email">'.antispambot($email).'</div>';
+					$sc_build .= '<div class="email" property="schema:email">'.antispambot($email).'</div>';
 
 				if(!empty($phone))
-					$sc_build .= '<div class="phone" itemprop="telephone">'.__('Phone:', 'schema' ).' '.$phone.'</div>';
+					$sc_build .= '<div class="phone" property="schema:telephone">'.__('Phone:', 'schema' ).' '.$phone.'</div>';
 
 				if(!empty($bday))
-					$sc_build .= '<div class="bday"><meta itemprop="birthDate" content="'.$bday.'">'._x('DOB:', 'person', 'schema' ).' '.date('m/d/Y', strtotime($bday)).'</div>';
+					$sc_build .= '<div class="bday"><meta property="schema:birthDate" content="'.$bday.'">'._x('DOB:', 'person', 'schema' ).' '.date('m/d/Y', strtotime($bday)).'</div>';
 
 				// close it up
 				$sc_build .= '</div>';
@@ -843,65 +849,65 @@ if ( !class_exists( "RavenSchema" ) ) :
 			// product
 			if(isset($type) && $type == 'product') {
 
-				$sc_build .= '<div itemscope itemtype="http://schema.org/Product">';
+				$sc_build .= '<div typeof="schema:Product">';
 
 				if(!empty($name) && !empty($url) ) {
-					$sc_build .= '<a class="schema_url" target="_blank" itemprop="url" href="'.esc_url($url).'">';
-					$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
+					$sc_build .= '<a class="schema_url" target="_blank" property="schema:url" href="'.esc_url($url).'">';
+					$sc_build .= '<div class="schema_name" property="schema:name">'.$name.'</div>';
 					$sc_build .= '</a>';
 				}
 
 				if(!empty($name) && empty($url) )
-					$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
+					$sc_build .= '<div class="schema_name" property="schema:name">'.$name.'</div>';
 
 				if(!empty($description))
-					$sc_build .= '<div class="schema_description" itemprop="description">'.esc_attr($description).'</div>';
+					$sc_build .= '<div class="schema_description" property="schema:description">'.esc_attr($description).'</div>';
 
 				if(!empty($brand))
-					$sc_build .= '<div class="brand" itemprop="brand" itemscope itemtype="http://schema.org/Organization">
-						<span class="desc_type">'._x('Brand:', 'product', 'schema' ).'</span> <span itemprop="name">'.$brand.'</span>
+					$sc_build .= '<div class="brand" property="schema:brand" typeof="schema:Organization">
+						<span class="desc_type">'._x('Brand:', 'product', 'schema' ).'</span> <span property="schema:name">'.$brand.'</span>
 					</div>';
 
 				if(!empty($manfu))
-					$sc_build .= '<div class="manufacturer" itemprop="manufacturer" itemscope itemtype="http://schema.org/Organization">
-						<span class="desc_type">'._x('Manufacturer:', 'product', 'schema' ).'</span> <span itemprop="name">'.$manfu.'</span>
+					$sc_build .= '<div class="manufacturer" property="schema:manufacturer" typeof="schema:Organization">
+						<span class="desc_type">'._x('Manufacturer:', 'product', 'schema' ).'</span> <span property="schema:name">'.$manfu.'</span>
 					</div>';
 
 				if(!empty($model))
-					$sc_build .= '<div class="model"><span class="desc_type">'._x('Model:', 'product', 'schema' ).'</span> <span itemprop="model">'.$model.'</span></div>';
+					$sc_build .= '<div class="model"><span class="desc_type">'._x('Model:', 'product', 'schema' ).'</span> <span property="schema:model">'.$model.'</span></div>';
 
 				if(!empty($prod_id))
-					$sc_build .= '<div class="prod_id"><span class="desc_type">'.__('Product ID:', 'schema' ).'</span> <span itemprop="productID">'.$prod_id.'</span></div>';
+					$sc_build .= '<div class="prod_id"><span class="desc_type">'.__('Product ID:', 'schema' ).'</span> <span property="schema:productID">'.$prod_id.'</span></div>';
 
 				// Have both rating fields
 				if(!empty($single_rating) && !empty($agg_rating)) :
-					$sc_build .= '<div itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">';
-					$sc_build .= '<span itemprop="ratingValue">'.$single_rating.'</span> '._x('based on', 'product rating based on', 'schema' ).' ';
-					$sc_build .= '<span itemprop="reviewCount">'.$agg_rating.'</span> '._x('reviews', 'product rating based on', 'schema' ).'';
+					$sc_build .= '<div property="schema:aggregateRating" typeof="schema:AggregateRating">';
+					$sc_build .= '<span property="schema:ratingValue">'.$single_rating.'</span> '._x('based on', 'product rating based on', 'schema' ).' ';
+					$sc_build .= '<span property="schema:reviewCount">'.$agg_rating.'</span> '._x('reviews', 'product rating based on', 'schema' ).'';
 					$sc_build .= '</div>';
 
 				// Secondary check if one part of review is missing to keep markup consistent
 				elseif(empty($agg_rating) && !empty($single_rating) ) :
-					$sc_build .= '<div itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
-						<span itemprop="ratingValue"><span class="desc_type">'._x('Review:', 'single product rating', 'schema' ).'</span> '.$single_rating.'</span>
+					$sc_build .= '<div property="schema:aggregateRating" typeof="schema:AggregateRating">
+						<span property="schema:ratingValue"><span class="desc_type">'._x('Review:', 'single product rating', 'schema' ).'</span> '.$single_rating.'</span>
 					</div>';
 
 				// Tertiary check if the other part of review is missing
 				elseif(empty($single_rating) && !empty($agg_rating) ) :
-						$sc_build .= '<div itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
-							<span itemprop="reviewCount">'.$agg_rating.'</span> '._x('total reviews', 'aggregated product rating count', 'schema' ).'
+						$sc_build .= '<div property="schema:aggregateRating" typeof="schema:AggregateRating">
+							<span property="schema:reviewCount">'.$agg_rating.'</span> '._x('total reviews', 'aggregated product rating count', 'schema' ).'
 						</div>';
 				endif;
 
 				if(!empty($price) && !empty($condition)) {
-					$sc_build .= '<div class="offers" itemprop="offers" itemscope itemtype="http://schema.org/Offer">';
-					$sc_build .= '<span class="price" itemprop="price">'.$price.'</span>';
-					$sc_build .= '<link itemprop="itemCondition" href="http://schema.org/'.$condition.'Condition" /> '.$condition.'';
+					$sc_build .= '<div class="offers" property="schema:offers" typeof="schema:Offer">';
+					$sc_build .= '<span class="price" property="schema:price">'.$price.'</span>';
+					$sc_build .= '<link property="schema:itemCondition" href="http://schema.org/'.$condition.'Condition" /> '.$condition.'';
 					$sc_build .= '</div>';
 				}
 
 				if(empty($condition) && !empty ($price))
-					$sc_build .= '<div class="offers" itemprop="offers" itemscope itemtype="http://schema.org/Offer"><span class="price" itemprop="price">'.$price.'</span></div>';
+					$sc_build .= '<div class="offers" property="schema:offers" typeof="schema:Offer"><span class="price" property="schema:price">'.$price.'</span></div>';
 
 
 				// close it up
@@ -913,31 +919,31 @@ if ( !class_exists( "RavenSchema" ) ) :
 			if(isset($type) && $type == 'event') {
 
 				$default   = (!empty($evtype) ? $evtype : 'Event');
-				$sc_build .= '<div itemscope itemtype="http://schema.org/'.$default.'">';
+				$sc_build .= '<div typeof="schema:'.$default.'">';
 
 				if(!empty($name) && !empty($url) ) {
-					$sc_build .= '<a class="schema_url" target="_blank" itemprop="url" href="'.esc_url($url).'">';
-					$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
+					$sc_build .= '<a class="schema_url" target="_blank" property="schema:url" href="'.esc_url($url).'">';
+					$sc_build .= '<div class="schema_name" property="schema:name">'.$name.'</div>';
 					$sc_build .= '</a>';
 				}
 
 				if(!empty($name) && empty($url) )
-					$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
+					$sc_build .= '<div class="schema_name" property="schema:name">'.$name.'</div>';
 
 				if(!empty($description))
-					$sc_build .= '<div class="schema_description" itemprop="description">'.esc_attr($description).'</div>';
+					$sc_build .= '<div class="schema_description" property="schema:description">'.esc_attr($description).'</div>';
 
 				if(!empty($sdate) && !empty($stime) ) :
 					$metatime = $sdate.'T'.date('G:i', strtotime($sdate.$stime));
-					$sc_build .= '<div><meta itemprop="startDate" content="'.$metatime.'">'._x('Starts:', 'event', 'schema' ).' '.date('m/d/Y', strtotime($sdate)).' '.$stime.'</div>';
+					$sc_build .= '<div><meta property="schema:startDate" content="'.$metatime.'">'._x('Starts:', 'event', 'schema' ).' '.date('m/d/Y', strtotime($sdate)).' '.$stime.'</div>';
 
 				// secondary check for missing start time
 				elseif(empty($stime) && !empty($sdate) ) :
-					$sc_build .= '<div><meta itemprop="startDate" content="'.$sdate.'">'._x('Starts:', 'event', 'schema' ).' '.date('m/d/Y', strtotime($sdate)).'</div>';
+					$sc_build .= '<div><meta property="schema:startDate" content="'.$sdate.'">'._x('Starts:', 'event', 'schema' ).' '.date('m/d/Y', strtotime($sdate)).'</div>';
 				endif;
 
 				if(!empty($edate))
-					$sc_build .= '<div><meta itemprop="endDate" content="'.$edate.':00.000">'._x('Ends:', 'event', 'schema' ).' '.date('m/d/Y', strtotime($edate)).'</div>';
+					$sc_build .= '<div><meta property="schema:endDate" content="'.$edate.':00.000">'._x('Ends:', 'event', 'schema' ).' '.date('m/d/Y', strtotime($edate)).'</div>';
 
 				if(!empty($duration)) {
 
@@ -947,7 +953,7 @@ if ( !class_exists( "RavenSchema" ) ) :
 					$hours		= (!empty($hour_cnv) && $hour_cnv > 0 ? $hour_cnv.' '.__('hours:', 'schema' ) : '');
 					$minutes	= (!empty($mins_cnv) && $mins_cnv > 0 ? ' '.__('and', 'schema' ).' '.$mins_cnv.' '.__('minutes', 'schema' ) : '');
 
-					$sc_build .= '<div><meta itemprop="duration" content="0000-00-00T'.$duration.'">'._x('Duration:', 'event', 'schema' ).' '.$hours.$minutes.'</div>';
+					$sc_build .= '<div><meta property="schema:duration" content="0000-00-00T'.$duration.'">'._x('Duration:', 'event', 'schema' ).' '.$hours.$minutes.'</div>';
 				}
 
 				// close actual event portion
@@ -960,33 +966,33 @@ if ( !class_exists( "RavenSchema" ) ) :
 					!empty($postalcode) ||
 					!empty($country)
 					)
-					$sc_build .= '<div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">';
+					$sc_build .= '<div property="schema:address" typeof="schema:PostalAddress">';
 
 				if(!empty($street))
-					$sc_build .= '<div class="street" itemprop="streetAddress">'.$street.'</div>';
+					$sc_build .= '<div class="street" property="schema:streetAddress">'.$street.'</div>';
 
 				if(!empty($pobox))
-					$sc_build .= '<div class="pobox">'.__('P.O. Box:', 'schema' ).' <span itemprop="postOfficeBoxNumber">'.$pobox.'</span></div>';
+					$sc_build .= '<div class="pobox">'.__('P.O. Box:', 'schema' ).' <span property="schema:postOfficeBoxNumber">'.$pobox.'</span></div>';
 
 				if(!empty($city) && !empty($state)) {
 					$sc_build .= '<div class="city_state">';
-					$sc_build .= '<span class="locale" itemprop="addressLocality">'.$city.'</span>,';
-					$sc_build .= '<span class="region" itemprop="addressRegion"> '.$state.'</span>';
+					$sc_build .= '<span class="locale" property="schema:addressLocality">'.$city.'</span>,';
+					$sc_build .= '<span class="region" property="schema:addressRegion"> '.$state.'</span>';
 					$sc_build .= '</div>';
 				}
 
 					// secondary check if one part of city / state is missing to keep markup consistent
 					if(empty($state) && !empty($city) )
-						$sc_build .= '<div class="city_state"><span class="locale" itemprop="addressLocality">'.$city.'</span></div>';
+						$sc_build .= '<div class="city_state"><span class="locale" property="schema:addressLocality">'.$city.'</span></div>';
 
 					if(empty($city) && !empty($state) )
-						$sc_build .= '<div class="city_state"><span class="region" itemprop="addressRegion">'.$state.'</span></div>';
+						$sc_build .= '<div class="city_state"><span class="region" property="schema:addressRegion">'.$state.'</span></div>';
 
 				if(!empty($postalcode))
-					$sc_build .= '<div class="postalcode" itemprop="postalCode">'.$postalcode.'</div>';
+					$sc_build .= '<div class="postalcode" property="schema:postalCode">'.$postalcode.'</div>';
 
 				if(!empty($country))
-					$sc_build .= '<div class="country" itemprop="addressCountry">'.$country.'</div>';
+					$sc_build .= '<div class="country" property="schema:addressCountry">'.$country.'</div>';
 
 				if(	!empty($street) ||
 					!empty($pobox) ||
@@ -1003,19 +1009,19 @@ if ( !class_exists( "RavenSchema" ) ) :
 			if(isset($type) && $type == 'organization') {
 
 				$default   = (!empty($orgtype) ? $orgtype : 'Organization');
-				$sc_build .= '<div itemscope itemtype="http://schema.org/'.$default.'">';
+				$sc_build .= '<div typeof="schema:'.$default.'">';
 
 				if(!empty($name) && !empty($url) ) {
-					$sc_build .= '<a class="schema_url" target="_blank" itemprop="url" href="'.esc_url($url).'">';
-					$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
+					$sc_build .= '<a class="schema_url" target="_blank" property="schema:url" href="'.esc_url($url).'">';
+					$sc_build .= '<div class="schema_name" property="schema:name">'.$name.'</div>';
 					$sc_build .= '</a>';
 				}
 
 				if(!empty($name) && empty($url) )
-					$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
+					$sc_build .= '<div class="schema_name" property="schema:name">'.$name.'</div>';
 
 				if(!empty($description))
-					$sc_build .= '<div class="schema_description" itemprop="description">'.esc_attr($description).'</div>';
+					$sc_build .= '<div class="schema_description" property="schema:description">'.esc_attr($description).'</div>';
 
 				if(	!empty($street) ||
 					!empty($pobox) ||
@@ -1024,33 +1030,33 @@ if ( !class_exists( "RavenSchema" ) ) :
 					!empty($postalcode) ||
 					!empty($country)
 					)
-					$sc_build .= '<div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">';
+					$sc_build .= '<div property="schema:address" typeof="schema:PostalAddress">';
 
 				if(!empty($street))
-					$sc_build .= '<div class="street" itemprop="streetAddress">'.$street.'</div>';
+					$sc_build .= '<div class="street" property="schema:streetAddress">'.$street.'</div>';
 
 				if(!empty($pobox))
-					$sc_build .= '<div class="pobox">'.__('P.O. Box:', 'schema' ).' <span itemprop="postOfficeBoxNumber">'.$pobox.'</span></div>';
+					$sc_build .= '<div class="pobox">'.__('P.O. Box:', 'schema' ).' <span property="schema:postOfficeBoxNumber">'.$pobox.'</span></div>';
 
 				if(!empty($city) && !empty($state)) {
 					$sc_build .= '<div class="city_state">';
-					$sc_build .= '<span class="locale" itemprop="addressLocality">'.$city.'</span>,';
-					$sc_build .= '<span class="region" itemprop="addressRegion"> '.$state.'</span>';
+					$sc_build .= '<span class="locale" property="schema:addressLocality">'.$city.'</span>,';
+					$sc_build .= '<span class="region" property="schema:addressRegion"> '.$state.'</span>';
 					$sc_build .= '</div>';
 				}
 
 					// secondary check if one part of city / state is missing to keep markup consistent
 					if(empty($state) && !empty($city) )
-						$sc_build .= '<div class="city_state"><span class="locale" itemprop="addressLocality">'.$city.'</span></div>';
+						$sc_build .= '<div class="city_state"><span class="locale" property="schema:addressLocality">'.$city.'</span></div>';
 
 					if(empty($city) && !empty($state) )
-						$sc_build .= '<div class="city_state"><span class="region" itemprop="addressRegion">'.$state.'</span></div>';
+						$sc_build .= '<div class="city_state"><span class="region" property="schema:addressRegion">'.$state.'</span></div>';
 
 				if(!empty($postalcode))
-					$sc_build .= '<div class="postalcode" itemprop="postalCode">'.$postalcode.'</div>';
+					$sc_build .= '<div class="postalcode" property="schema:postalCode">'.$postalcode.'</div>';
 
 				if(!empty($country))
-					$sc_build .= '<div class="country" itemprop="addressCountry">'.$country.'</div>';
+					$sc_build .= '<div class="country" property="schema:addressCountry">'.$country.'</div>';
 
 				if(	!empty($street) ||
 					!empty($pobox) ||
@@ -1062,13 +1068,13 @@ if ( !class_exists( "RavenSchema" ) ) :
 					$sc_build .= '</div>';
 
 				if(!empty($email))
-					$sc_build .= '<div class="email" itemprop="email">'.antispambot($email).'</div>';
+					$sc_build .= '<div class="email" property="schema:email">'.antispambot($email).'</div>';
 
 				if(!empty($phone))
-					$sc_build .= '<div class="phone" itemprop="telephone">'.__('Phone:', 'schema' ).' '.$phone.'</div>';
+					$sc_build .= '<div class="phone" property="schema:telephone">'.__('Phone:', 'schema' ).' '.$phone.'</div>';
 
 				if(!empty($fax))
-					$sc_build .= '<div class="fax" itemprop="faxNumber">'.__('Fax:', 'schema' ).' '.$fax.'</div>';
+					$sc_build .= '<div class="fax" property="schema:faxNumber">'.__('Fax:', 'schema' ).' '.$fax.'</div>';
 
 				// close it up
 				$sc_build .= '</div>';
@@ -1078,32 +1084,32 @@ if ( !class_exists( "RavenSchema" ) ) :
 			// movie
 			if(isset($type) && $type == 'movie') {
 
-				$sc_build .= '<div itemscope itemtype="http://schema.org/Movie">';
+				$sc_build .= '<div typeof="schema:Movie">';
 
 				if(!empty($name) && !empty($url) ) {
-					$sc_build .= '<a class="schema_url" target="_blank" itemprop="url" href="'.esc_url($url).'">';
-					$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
+					$sc_build .= '<a class="schema_url" target="_blank" property="schema:url" href="'.esc_url($url).'">';
+					$sc_build .= '<div class="schema_name" property="schema:name">'.$name.'</div>';
 					$sc_build .= '</a>';
 				}
 
 				if(!empty($name) && empty($url) )
-					$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
+					$sc_build .= '<div class="schema_name" property="schema:name">'.$name.'</div>';
 
 				if(!empty($description))
-					$sc_build .= '<div class="schema_description" itemprop="description">'.esc_attr($description).'</div>';
+					$sc_build .= '<div class="schema_description" property="schema:description">'.esc_attr($description).'</div>';
 
 
 				if(!empty($director))
-					$sc_build .= '<div itemprop="director" itemscope itemtype="http://schema.org/Person">'.__('Directed by:', 'schema' ).' <span itemprop="name">'.$director.'</span></div>';
+					$sc_build .= '<div property="schema:director" typeof="schema:Person">'.__('Directed by:', 'schema' ).' <span property="schema:name">'.$director.'</span></div>';
 
 				if(!empty($producer))
-					$sc_build .= '<div itemprop="producer" itemscope itemtype="http://schema.org/Person">'.__('Produced by:', 'schema' ).' <span itemprop="name">'.$producer.'</span></div>';
+					$sc_build .= '<div property="schema:producer" typeof="schema:Person">'.__('Produced by:', 'schema' ).' <span property="schema:name">'.$producer.'</span></div>';
 
 				if(!empty($actor_1)) {
 					$sc_build .= '<div>'.__('Starring:', 'schema' ).'';
 						foreach ($actors as $actor) {
-							$sc_build .= '<div itemprop="actors" itemscope itemtype="http://schema.org/Person">';
-							$sc_build .= '<span itemprop="name">'.$actor.'</span>';
+							$sc_build .= '<div property="schema:actors" typeof="schema:Person">';
+							$sc_build .= '<span property="schema:name">'.$actor.'</span>';
 							$sc_build .= '</div>';
 						}
 					$sc_build .= '</div>';
@@ -1118,46 +1124,46 @@ if ( !class_exists( "RavenSchema" ) ) :
 			// book
 			if(isset($type) && $type == 'book') {
 
-				$sc_build .= '<div itemscope itemtype="http://schema.org/Book">';
+				$sc_build .= '<div typeof="schema:Book">';
 
 				if(!empty($name) && !empty($url) ) {
-					$sc_build .= '<a class="schema_url" target="_blank" itemprop="url" href="'.esc_url($url).'">';
-					$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
+					$sc_build .= '<a class="schema_url" target="_blank" property="schema:url" href="'.esc_url($url).'">';
+					$sc_build .= '<div class="schema_name" property="schema:name">'.$name.'</div>';
 					$sc_build .= '</a>';
 				}
 
 				if(!empty($name) && empty($url) )
-					$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
+					$sc_build .= '<div class="schema_name" property="schema:name">'.$name.'</div>';
 
 				if(!empty($description))
-					$sc_build .= '<div class="schema_description" itemprop="description">'.esc_attr($description).'</div>';
+					$sc_build .= '<div class="schema_description" property="schema:description">'.esc_attr($description).'</div>';
 
 				if(!empty($author))
-					$sc_build .= '<div itemprop="author" itemscope itemtype="http://schema.org/Person">'.__('Written by:', 'schema' ).' <span itemprop="name">'.$author.'</span></div>';
+					$sc_build .= '<div property="schema:author" typeof="schema:Person">'.__('Written by:', 'schema' ).' <span property="schema:name">'.$author.'</span></div>';
 
 				if(!empty($publisher))
-					$sc_build .= '<div itemprop="publisher" itemscope itemtype="http://schema.org/Organization">'.__('Published by:', 'schema' ).' <span itemprop="name">'.$publisher.'</span></div>';
+					$sc_build .= '<div property="schema:publisher" typeof="schema:Organization">'.__('Published by:', 'schema' ).' <span property="schema:name">'.$publisher.'</span></div>';
 
 				if(!empty($pubdate))
-					$sc_build .= '<div class="bday"><meta itemprop="datePublished" content="'.$pubdate.'">'.__('Date Published:', 'schema' ).' '.date('m/d/Y', strtotime($pubdate)).'</div>';
+					$sc_build .= '<div class="bday"><meta property="schema:datePublished" content="'.$pubdate.'">'.__('Date Published:', 'schema' ).' '.date('m/d/Y', strtotime($pubdate)).'</div>';
 
 				if(!empty($edition))
-					$sc_build .= '<div>'.__('Edition:', 'schema' ).' <span itemprop="bookEdition">'.$edition.'</span></div>';
+					$sc_build .= '<div>'.__('Edition:', 'schema' ).' <span property="schema:bookEdition">'.$edition.'</span></div>';
 
 				if(!empty($isbn))
-					$sc_build .= '<div>'.__('ISBN:', 'schema' ).' <span itemprop="isbn">'.$isbn.'</span></div>';
+					$sc_build .= '<div>'.__('ISBN:', 'schema' ).' <span property="schema:isbn">'.$isbn.'</span></div>';
 
 				if( !empty($ebook) || !empty($paperback) || !empty($hardcover) ) {
 					$sc_build .= '<div>'.__('Available in:', 'schema' ).' ';
 
 						if(!empty($ebook))
-							$sc_build .= '<link itemprop="bookFormat" href="http://schema.org/Ebook">'.__('Ebook', 'schema' ).' ';
+							$sc_build .= '<link property="schema:bookFormat" href="http://schema.org/Ebook">'.__('Ebook', 'schema' ).' ';
 
 						if(!empty($paperback))
-							$sc_build .= '<link itemprop="bookFormat" href="http://schema.org/Paperback">'.__('Paperback', 'schema' ).' ';
+							$sc_build .= '<link property="schema:bookFormat" href="http://schema.org/Paperback">'.__('Paperback', 'schema' ).' ';
 
 						if(!empty($hardcover))
-							$sc_build .= '<link itemprop="bookFormat" href="http://schema.org/Hardcover">'.__('Hardcover', 'schema' ).' ';
+							$sc_build .= '<link property="schema:bookFormat" href="http://schema.org/Hardcover">'.__('Hardcover', 'schema' ).' ';
 
 					$sc_build .= '</div>';
 				}
@@ -1171,44 +1177,44 @@ if ( !class_exists( "RavenSchema" ) ) :
 			// review
 			if(isset($type) && $type == 'review') {
 
-				$sc_build .= '<div itemscope itemtype="http://schema.org/Review">';
+				$sc_build .= '<div typeof="schema:Review">';
 
 				if(!empty($name) && !empty($url) ) {
-					$sc_build .= '<a class="schema_url" target="_blank" itemprop="url" href="'.esc_url($url).'">';
-					$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
+					$sc_build .= '<a class="schema_url" target="_blank" property="schema:url" href="'.esc_url($url).'">';
+					$sc_build .= '<div class="schema_name" property="schema:name">'.$name.'</div>';
 					$sc_build .= '</a>';
 				}
 
 				if(!empty($name) && empty($url) )
-					$sc_build .= '<div class="schema_name" itemprop="name">'.$name.'</div>';
+					$sc_build .= '<div class="schema_name" property="schema:name">'.$name.'</div>';
 
 				if(!empty($description))
-					$sc_build .= '<div class="schema_description" itemprop="description">'.esc_attr($description).'</div>';
+					$sc_build .= '<div class="schema_description" property="schema:description">'.esc_attr($description).'</div>';
 
 				if(!empty($rev_name))
-					$sc_build .= '<div class="schema_review_name" itemprop="itemReviewed" itemscope itemtype="http://schema.org/Thing"><span itemprop="name">'.$rev_name.'</span></div>';
+					$sc_build .= '<div class="schema_review_name" property="schema:itemReviewed" typeof="schema:Thing"><span property="schema:name">'.$rev_name.'</span></div>';
 
 				if(!empty($author))
-					$sc_build .= '<div itemprop="author" itemscope itemtype="http://schema.org/Person">'.__('Written by:', 'schema').' <span itemprop="name">'.$author.'</span></div>';
+					$sc_build .= '<div property="schema:author" typeof="schema:Person">'.__('Written by:', 'schema').' <span property="schema:name">'.$author.'</span></div>';
 
 				if(!empty($pubdate))
-					$sc_build .= '<div class="pubdate"><meta itemprop="datePublished" content="'.$pubdate.'">'.__('Date Published:', 'schema').' '.date('m/d/Y', strtotime($pubdate)).'</div>';
+					$sc_build .= '<div class="pubdate"><meta property="schema:datePublished" content="'.$pubdate.'">'.__('Date Published:', 'schema').' '.date('m/d/Y', strtotime($pubdate)).'</div>';
 
 				if(!empty($rev_body))
-					$sc_build .= '<div class="schema_review_body" itemprop="reviewBody">'.esc_textarea($rev_body).'</div>';
+					$sc_build .= '<div class="schema_review_body" property="schema:reviewBody">'.esc_textarea($rev_body).'</div>';
 
 				if(!empty($user_review) ) {
-					$sc_build .= '<div itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">';
+					$sc_build .= '<div property="schema:reviewRating" typeof="schema:Rating">';
 
 					// minimum review scale
 					if(!empty($min_review))
-						$sc_build .= '<meta itemprop="worstRating" content="'.$min_review.'">';
+						$sc_build .= '<meta property="schema:worstRating" content="'.$min_review.'">';
 
-					$sc_build .= '<span itemprop="ratingValue">'.$user_review.'</span>';
+					$sc_build .= '<span property="schema:ratingValue">'.$user_review.'</span>';
 
 					// max review scale
 					if(!empty($max_review))
-						$sc_build .= ' / <span itemprop="bestRating">'.$max_review.'</span> '.__('stars', 'schema' ).'';
+						$sc_build .= ' / <span property="schema:bestRating">'.$max_review.'</span> '.__('stars', 'schema' ).'';
 
 
 					$sc_build .= '</div>';
@@ -1222,28 +1228,28 @@ if ( !class_exists( "RavenSchema" ) ) :
 			// recipe
 			if(isset($type) && $type == 'recipe') {
 
-				$sc_build .= '<div itemscope itemtype="http://schema.org/Recipe">';
+				$sc_build .= '<div typeof="schema:Recipe">';
 
 				$imgalt = isset($name) ? $name : __('Recipe Image', 'schema' );
 
 				if(!empty($image)) // put image first so it can lay out better
-					$sc_build .= '<img class="schema_image" itemprop="image" src="'.esc_url($image).'" alt="'.$imgalt.'" />';
+					$sc_build .= '<img class="schema_image" property="schema:image" src="'.esc_url($image).'" alt="'.$imgalt.'" />';
 
 				if(!empty($name) )
-					$sc_build .= '<div class="schema_name header_type" itemprop="name">'.$name.'</div>';
+					$sc_build .= '<div class="schema_name header_type" property="schema:name">'.$name.'</div>';
 
 				if(!empty($author) && !empty($pubdate) ) {
 					$sc_build .= '<div class="schema_byline">';
-					$sc_build .= ''.__('By', 'schema' ).' <span class="schema_strong" itemprop="author">'.$author.'</span>';
-					$sc_build .= ' '.__('on', 'schema' ).' <span class="schema_pubdate"><meta itemprop="datePublished" content="'.$pubdate.'">'.date('m/d/Y', strtotime($pubdate)).'</span>';
+					$sc_build .= ''.__('By', 'schema' ).' <span class="schema_strong" property="schema:author">'.$author.'</span>';
+					$sc_build .= ' '.__('on', 'schema' ).' <span class="schema_pubdate"><meta property="schema:datePublished" content="'.$pubdate.'">'.date('m/d/Y', strtotime($pubdate)).'</span>';
 					$sc_build .= '</div>';
 				}
 
 				if(!empty($author) && empty($pubdate) )
-					$sc_build .= '<div class="schema_author"> '.__('by', 'schema' ).' <span class="schema_strong" itemprop="author">'.$author.'<span></div>';
+					$sc_build .= '<div class="schema_author"> '.__('by', 'schema' ).' <span class="schema_strong" property="schema:author">'.$author.'<span></div>';
 
 				if(!empty($description))
-					$sc_build .= '<div class="schema_description" itemprop="description">'.esc_attr($description).'</div>';
+					$sc_build .= '<div class="schema_description" property="schema:description">'.esc_attr($description).'</div>';
 
 				if(!empty($yield) || !empty($prephours) || !empty($prepmins) || !empty($cookhours) || !empty($cookmins) ) {
 					$sc_build .= '<div>';
@@ -1256,7 +1262,7 @@ if ( !class_exists( "RavenSchema" ) ) :
 
 						$sc_build .= '<p class="stacked">';
 						$sc_build .= '<span class="schema_strong">'._x('Prep Time:', 'recipe', 'schema' ).'</span> ';
-						$sc_build .= '<meta itemprop="prepTime" content="PT'.$prephours.'H'.$prepmins.'M">';
+						$sc_build .= '<meta property="schema:prepTime" content="PT'.$prephours.'H'.$prepmins.'M">';
 						$sc_build .= sprintf( _x( '%s, %s', 'x hours, y minutes', 'schema'), $prephours_f, $prepmins_f );
 						$sc_build .= '</p>';
 					}
@@ -1267,7 +1273,7 @@ if ( !class_exists( "RavenSchema" ) ) :
 
 						$sc_build .= '<p class="stacked">';
 						$sc_build .= '<span class="schema_strong">'.__('Prep Time:', 'schema' ).'</span> ';
-						$sc_build .= '<meta itemprop="prepTime" content="PT'.$prephours.'H">';
+						$sc_build .= '<meta property="schema:prepTime" content="PT'.$prephours.'H">';
 						$sc_build .= $prephours_f;
 						$sc_build .= '</p>';
 					}
@@ -1278,7 +1284,7 @@ if ( !class_exists( "RavenSchema" ) ) :
 
 						$sc_build .= '<p class="stacked">';
 						$sc_build .= '<span class="schema_strong">'.__('Prep Time:', 'schema' ).'</span> ';
-						$sc_build .= '<meta itemprop="prepTime" content="PT'.$prepmins.'M">';
+						$sc_build .= '<meta property="schema:prepTime" content="PT'.$prepmins.'M">';
 						$sc_build .= $prepmins_f;
 						$sc_build .= '</p>';
 					}
@@ -1291,7 +1297,7 @@ if ( !class_exists( "RavenSchema" ) ) :
 
 						$sc_build .= '<p class="stacked">';
 						$sc_build .= '<span class="schema_strong">'.__('Cook Time:', 'schema' ).'</span> ';
-						$sc_build .= '<meta itemprop="cookTime" content="PT'.$cookhours.'H'.$cookmins.'M">';
+						$sc_build .= '<meta property="schema:cookTime" content="PT'.$cookhours.'H'.$cookmins.'M">';
 						$sc_build .= sprintf( _x( '%s, %s', 'x hours, y minutes', 'schema'), $cookhours_f, $cookmins_f );
 						$sc_build .= '</p>';
 					}
@@ -1302,7 +1308,7 @@ if ( !class_exists( "RavenSchema" ) ) :
 
 						$sc_build .= '<p class="stacked">';
 						$sc_build .= '<span class="schema_strong">'.__('Cook Time:', 'schema' ).'</span> ';
-						$sc_build .= '<meta itemprop="cookTime" content="PT'.$cookhours.'H">';
+						$sc_build .= '<meta property="schema:cookTime" content="PT'.$cookhours.'H">';
 						$sc_build .= $cookhours_f;
 						$sc_build .= '</p>';
 					}
@@ -1313,7 +1319,7 @@ if ( !class_exists( "RavenSchema" ) ) :
 
 						$sc_build .= '<p class="stacked">';
 						$sc_build .= '<span class="schema_strong">'.__('Cook Time:', 'schema' ).'</span> ';
-						$sc_build .= '<meta itemprop="cookTime" content="PT'.$cookmins.'M">';
+						$sc_build .= '<meta property="schema:cookTime" content="PT'.$cookmins.'M">';
 						$sc_build .= $cookmins_f;
 						$sc_build .= '</p>';
 					}
@@ -1323,7 +1329,7 @@ if ( !class_exists( "RavenSchema" ) ) :
 
 						$sc_build .= '<p class="stacked">';
 						$sc_build .= '<span class="schema_strong">'._x('Yield:', 'recipe', 'schema' ).'</span> ';
-						$sc_build .= '<meta itemprop="recipeYield">';
+						$sc_build .= '<meta property="schema:recipeYield">';
 						$sc_build .= $yield;
 						$sc_build .= '</p>';
 					}
@@ -1332,26 +1338,26 @@ if ( !class_exists( "RavenSchema" ) ) :
 				}
 
 				if( !empty($calories) || !empty($fatcount) || !empty($sugarcount) || !empty($saltcount) ) {
-					$sc_build .= '<div itemprop="nutrition" itemscope itemtype="http://schema.org/NutritionInformation">';
+					$sc_build .= '<div property="schema:nutrition" typeof="schema:NutritionInformation">';
 					$sc_build .= '<span class="schema_strong">'.__('Nutrition Information:', 'schema' ).'</span><ul>';
 
 					if(!empty($calories))
-						$sc_build .= '<li><span itemprop="calories">'.
+						$sc_build .= '<li><span property="schema:calories">'.
 							sprintf( _n('%d calorie', '%d calories', $calories, 'schema'), $calories ) .
 						'</span></li>';
 
 					if(!empty($fatcount))
-						$sc_build .= '<li><span itemprop="fatContent">'.
+						$sc_build .= '<li><span property="schema:fatContent">'.
 							sprintf( _n('%d gram of fat', '%d grams of fat', $fatcount, 'schema'), $fatcount ) .
 						'</span></li>';
 
 					if(!empty($sugarcount))
-						$sc_build .= '<li><span itemprop="sugarContent">'.
+						$sc_build .= '<li><span property="schema:sugarContent">'.
 							sprintf( _n('%d gram of sugar', '%d grams of sugar', $sugarcount, 'schema'), $sugarcount ) .
 						'</span></li>';
 
 					if(!empty($saltcount))
-						$sc_build .= '<li><span itemprop="sodiumContent">'.
+						$sc_build .= '<li><span property="schema:sodiumContent">'.
 							sprintf( _n('%d milligram of sodium', '%d milligrams of sodium', $saltcount, 'schema'), $saltcount ) .
 						'</span></li>';
 
@@ -1362,14 +1368,14 @@ if ( !class_exists( "RavenSchema" ) ) :
 					$sc_build .= '<div><span class="schema_strong">'.__('Ingredients:', 'schema' ).'</span>';
 					$sc_build .= '<ul>';
 					foreach ($ingrts as $ingrt) {
-						$sc_build .= '<li><span itemprop="ingredients">'.$ingrt.'</span></li>';
+						$sc_build .= '<li><span property="schema:ingredients">'.$ingrt.'</span></li>';
 					}
 					$sc_build .= '</ul>';
 					$sc_build .= '</div>';
 				}
 
 				if(!empty($instructions))
-					$sc_build .= '<div class="schema_instructions" itemprop="recipeInstructions">
+					$sc_build .= '<div class="schema_instructions" property="schema:recipeInstructions">
 						<span class="schema_strong">'.__('Instructions:', 'schema' ).'</span><br />'.esc_attr($instructions).'
 					</div>';
 
@@ -1394,7 +1400,7 @@ if ( !class_exists( "RavenSchema" ) ) :
 
 			// don't show on dashboard (QuickPress)
 			$current_screen = get_current_screen();
-			if ( 'dashboard' == $current_screen->base )
+			if ( is_object($current_screen) && 'dashboard' == $current_screen->base )
 				return;
 
 			// don't display button for users who don't have access
@@ -1406,13 +1412,13 @@ if ( !class_exists( "RavenSchema" ) ) :
 
 			if ($version < 3.5) {
 				// show button for v 3.4 and below
-				echo '<a href="#TB_inline?width=650&inlineId=schema_build_form" class="thickbox schema_clear schema_one" id="add_schema" title="' . __('Schema Creator Form') . '">' .
+				echo '<a href="#TB_inline?width=650&inlineId=schema_build_form" class="thickbox schema_clear schema_one" id="add_schema" title="' . __('Schema Creator Form', 'schema') . '">' .
 					__('Schema Creator Form', 'schema' ) .
 				'</a>';
 			} else {
 				// display button matching new UI
 				$img = '<span class="schema-media-icon"></span> ';
-				echo '<a href="#TB_inline?width=650&inlineId=schema_build_form" class="thickbox schema_clear schema_two button" id="add_schema" title="' . esc_attr__( 'Add Schema' ) . '">' .
+				echo '<a href="#TB_inline?width=650&inlineId=schema_build_form" class="thickbox schema_clear schema_two button" id="add_schema" title="' . esc_attr__( 'Add Schema', 'schema' ) . '">' .
 					$img . __( 'Add Schema', 'schema' ) .
 				'</a>';
 			}
@@ -1426,7 +1432,7 @@ if ( !class_exists( "RavenSchema" ) ) :
 
 			// don't load form on non-editing pages
 			$current_screen = get_current_screen();
-			if ( 'post' !== $current_screen->base )
+			if ( is_object($current_screen) && 'post' !== $current_screen->base )
 				return;
 
 			// don't display form for users who don't have access
@@ -1448,6 +1454,7 @@ if ( !class_exists( "RavenSchema" ) ) :
 					var name			= jQuery('#schema_builder input#schema_name').val();
 					var orgname			= jQuery('#schema_builder input#schema_orgname').val();
 					var jobtitle		= jQuery('#schema_builder input#schema_jobtitle').val();
+					var worksfor		= jQuery('#schema_builder input#schema_worksfor').val();
 					var url				= jQuery('#schema_builder input#schema_url').val();
 					var bday			= jQuery('#schema_builder input#schema_bday-format').val();
 					var street			= jQuery('#schema_builder input#schema_street').val();
@@ -1511,8 +1518,10 @@ if ( !class_exists( "RavenSchema" ) ) :
 							output += 'name="' + name + '" ';
 						if(orgname)
 							output += 'orgname="' + orgname + '" ';
-						if(jobtitle)
+						if(jobtitle) {
 							output += 'jobtitle="' + jobtitle + '" ';
+							output += 'worksfor="' + worksfor + '" ';
+						}
 						if(url)
 							output += 'url="' + url + '" ';
 						if(description)
@@ -1818,6 +1827,11 @@ if ( !class_exists( "RavenSchema" ) ) :
 					<div id="sc_jobtitle" class="sc_option" style="display:none">
 						<label for="schema_jobtitle"><?php _e('Job Title', 'schema'); ?></label>
 						<input type="text" name="schema_jobtitle" class="form_full" value="" id="schema_jobtitle" />
+					</div>
+
+					<div id="sc_worksfor" class="sc_option" style="display:none">
+						<label for="schema_worksfor"><?php _e('Works For', 'schema'); ?></label>
+						<input type="text" name="schema_worksfor" class="form_full" value="" id="schema_worksfor" />
 					</div>
 
 					<div id="sc_url" class="sc_option" style="display:none">
@@ -2291,7 +2305,7 @@ if ( !class_exists( "RavenSchema" ) ) :
 							<span>
 								<input type="checkbox" class="schema_check" id="schema_hardcover" name="schema_hardcover" value="hardcover" />
 								<label for="schema_hardcover" rel="checker"><?php _e('Hardcover', 'schema'); ?></label>
-						   </span>
+							</span>
 						</div>
 					</div>
 
@@ -2365,8 +2379,8 @@ if ( !class_exists( "RavenSchema" ) ) :
 
 					<!-- button for inserting -->
 					<div class="insert_button" style="display:none">
-						<input class="schema_insert schema_button" type="button" value="<?php _e('Insert'); ?>" onclick="InsertSchema();"/>
-						<input class="schema_cancel schema_clear schema_button" type="button" value="<?php _e('Cancel'); ?>" onclick="tb_remove(); return false;"/>
+						<input class="schema_insert schema_button" type="button" value="<?php _e('Insert', 'schema'); ?>" onclick="InsertSchema();"/>
+						<input class="schema_cancel schema_clear schema_button" type="button" value="<?php _e('Cancel', 'schema'); ?>" onclick="tb_remove(); return false;"/>
 					</div>
 
 					<!-- various messages -->
